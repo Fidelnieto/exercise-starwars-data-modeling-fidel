@@ -7,6 +7,34 @@ from eralchemy2 import render_er
 
 Base = declarative_base()
 
+class User(Base):
+    __tablename__ = 'users'
+    
+    id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True, nullable=False)
+    email = Column(String, unique=True, nullable=False)
+    password = Column(String, nullable=False)
+    first_name = Column(String)
+    last_name = Column(String)
+    subscription_date = Column(String) 
+
+    favorites = relationship("Favorite", back_populates="user")
+
+class Favorite(Base):
+    __tablename__ = 'favorites'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    character_id = Column(Integer, ForeignKey('characters.id'))
+    vehicle_id = Column(Integer, ForeignKey('vehicles.id'))
+    planet_id = Column(Integer, ForeignKey('planets.id'))
+
+    user = relationship("User", back_populates="favorites")
+    character = relationship("Character")
+    vehicle = relationship("Vehicle")
+    planet = relationship("Planet")
+
+
 class Character(Base):
     __tablename__ = 'characters'
     
@@ -55,31 +83,6 @@ class Planet(Base):
     population = Column(String)
 
     favorites = relationship("Favorite", back_populates="planet")
-
-
-class User(Base):
-    __tablename__ = 'users'
-    
-    id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True, nullable=False)
-    email = Column(String, unique=True, nullable=False)
-
-    favorites = relationship("Favorite", back_populates="user")
-
-class Favorite(Base):
-    __tablename__ = 'favorites'
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    character_id = Column(Integer, ForeignKey('characters.id'))
-    vehicle_id = Column(Integer, ForeignKey('vehicles.id'))
-    planet_id = Column(Integer, ForeignKey('planets.id'))
-
-    user = relationship("User", back_populates="favorites")
-    character = relationship("Character")
-    vehicle = relationship("Vehicle")
-    planet = relationship("Planet")
-
 
 ## Draw from SQLAlchemy base
 render_er(Base, 'diagram.png')
